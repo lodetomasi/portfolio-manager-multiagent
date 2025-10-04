@@ -13,6 +13,7 @@ from agents.market_agent import MarketDataAgent
 from agents.portfolio_agent import PortfolioAnalysisAgent
 from agents.risk_agent import RiskAssessmentAgent
 from agents.optimization_agent import PortfolioOptimizationAgent
+from utils.real_data_fetcher import RealDataFetcher
 
 
 class MultiAgentOrchestrator:
@@ -41,6 +42,9 @@ class MultiAgentOrchestrator:
         self.portfolio_agent = PortfolioAnalysisAgent()
         self.risk_agent = RiskAssessmentAgent()
         self.optimization_agent = PortfolioOptimizationAgent()
+
+        # Real data fetcher (yfinance)
+        self.real_data = RealDataFetcher()
 
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.results = {}
@@ -84,15 +88,63 @@ class MultiAgentOrchestrator:
                 "max_sector_exposure": 0.50
             }
 
-        # ========== PHASE 1: Market Data Collection ==========
-        print("📊 Phase 1: Collecting market data...")
+        # ========== PHASE 0: Real Data Collection (yfinance) ==========
+        print("📊 Phase 0: Fetching REAL market data (yfinance)...")
+        print("-" * 70)
+        print(f"[ORCHESTRATOR] Fetching real-time prices for: {', '.join(symbols)}")
+        print(f"[ORCHESTRATOR] Data source: Yahoo Finance API (REAL DATA)")
+
+        # Get real current prices
+        real_prices = await self.real_data.get_current_prices(symbols)
+
+        # Get real historical data for accurate calculations
+        print(f"[ORCHESTRATOR] Fetching historical returns (1 year) for accurate metrics...")
+        real_historical = await self.real_data.get_portfolio_historical_values(
+            portfolio['holdings'],
+            period="1y"
+        )
+
+        # Calculate real metrics from historical data
+        real_metrics = self.real_data.calculate_real_metrics(
+            real_historical['returns'],
+            real_historical['values']
+        )
+
+        print(f"[ORCHESTRATOR] ✓ Real data quality: {real_metrics['data_quality']}")
+        print(f"[ORCHESTRATOR] ✓ Historical data points: {real_metrics['num_data_points']}")
+        print(f"[ORCHESTRATOR] ✓ Real Sharpe Ratio: {real_metrics['sharpe_ratio']:.3f}")
+        print(f"[ORCHESTRATOR] ✓ Real Volatility: {real_metrics['volatility']*100:.2f}%")
+        print(f"[ORCHESTRATOR] ✓ Real Max Drawdown: {real_metrics['max_drawdown']*100:.2f}%")
+
+        self.results['real_data'] = {
+            'prices': real_prices,
+            'historical': real_historical,
+            'metrics': real_metrics
+        }
+
+        print("✓ Real data collection complete\n")
+
+        # ========== PHASE 1: Market Data Collection (News/Context) ==========
+        print("📊 Phase 1: Collecting market context (news, analyst ratings)...")
         print("-" * 70)
         print(f"[ORCHESTRATOR] Task assignment: {self.task_assignments['market_data']}")
-        print(f"[ORCHESTRATOR] Symbols to fetch: {', '.join(symbols)}")
-        print(f"[ORCHESTRATOR] Expected effort: 3-4 web searches, ~30-60s")
-        print("[ORCHESTRATOR] Launching MarketDataAgent with WebSearch tools...")
+        print(f"[ORCHESTRATOR] Note: Price data already collected from yfinance (REAL)")
+        print(f"[ORCHESTRATOR] WebSearch focus: News, analyst ratings, qualitative data")
 
         market_data = await self.market_agent.collect_data(symbols)
+
+        # Merge real prices with market context
+        if isinstance(market_data, dict) and 'symbols' in market_data:
+            for symbol in symbols:
+                if symbol in real_prices and symbol in market_data['symbols']:
+                    # Override with REAL data
+                    market_data['symbols'][symbol]['price'] = real_prices[symbol]['price']
+                    market_data['symbols'][symbol]['volume'] = real_prices[symbol]['volume']
+                    market_data['symbols'][symbol]['data_source'] = 'yfinance (REAL)'
+                elif symbol in real_prices:
+                    # Add REAL data if missing from WebSearch
+                    market_data['symbols'][symbol] = real_prices[symbol]
+
         self.results['market_data'] = market_data
 
         # Extended thinking: Log data quality
@@ -205,7 +257,8 @@ class MultiAgentOrchestrator:
             "summary": await self._generate_summary(
                 portfolio_analysis,
                 risk_assessment,
-                optimization
+                optimization,
+                self.results.get('real_data', {}).get('metrics', {})
             )
         }
 
@@ -220,20 +273,36 @@ class MultiAgentOrchestrator:
         self,
         portfolio_analysis: Dict,
         risk_assessment: Dict,
-        optimization: Dict
+        optimization: Dict,
+        real_metrics: Dict = None
     ) -> Dict:
         """
         Generate executive summary using Lead Agent synthesis.
 
         Following Anthropic's pattern: Lead agent personally writes final report
         with critical reasoning and synthesis of subagent results.
+
+        Now includes REAL metrics from yfinance for accurate reporting.
         """
         from claude_agent_sdk import query, ClaudeAgentOptions
 
         print("[ORCHESTRATOR] Lead agent synthesizing final report...")
 
         # Prepare context for lead agent
-        synthesis_prompt = f"""You are the Lead Portfolio Analyst synthesizing results from 4 specialist agents.
+        real_metrics_text = ""
+        if real_metrics and real_metrics.get('data_quality') == 'real (yfinance)':
+            real_metrics_text = f"""
+
+4. REAL HISTORICAL METRICS (yfinance - 1 year):
+   - Sharpe Ratio: {real_metrics.get('sharpe_ratio', 0):.3f} (REAL DATA)
+   - Volatility: {real_metrics.get('volatility', 0)*100:.2f}% (REAL DATA)
+   - Max Drawdown: {real_metrics.get('max_drawdown', 0)*100:.2f}% (REAL DATA)
+   - Total Return: {real_metrics.get('total_return', 0)*100:.2f}% (REAL DATA)
+   - Data Points: {real_metrics.get('num_data_points', 0)} days (VALIDATED)
+   ✅ All metrics calculated from real Yahoo Finance historical data
+"""
+
+        synthesis_prompt = f"""You are the Lead Portfolio Analyst synthesizing results from specialist agents.
 
 AGENT RESULTS:
 
@@ -244,7 +313,7 @@ AGENT RESULTS:
 {json.dumps(risk_assessment, indent=2)}
 
 3. OptimizationAgent Recommendations:
-{json.dumps(optimization, indent=2)}
+{json.dumps(optimization, indent=2)}{real_metrics_text}
 
 TASK:
 Write a concise executive summary with critical analysis. Include:
