@@ -1,0 +1,50 @@
+{
+  "name": "Portfolio Reale",
+  "holdings": [
+    {
+      "symbol": "DEFX.MI",
+      "name": "VanEck Defense UCITS ETF",
+      "shares": 42,
+      "sector": "Defense",
+      "asset_class": "Equity",
+      "average_cost": 47.9563,
+      "current_price": 56.75,
+      "currency": "EUR"
+    },
+    {
+      "symbol": "VWCE.DE",
+      "name": "Vanguard FTSE All-World UCITS ETF (USD) Acc",
+      "shares": 46,
+      "sector": "Global Equity",
+      "asset_class": "Equity",
+      "average_cost": 131.16152,
+      "current_price": 141.6,
+      "currency": "EUR"
+    },
+    {
+      "symbol": "HYGG.PA",
+      "name": "Amundi IS Global HY Corp. Bond ESG UCITS ETF Acc",
+      "shares": 92,
+      "sector": "High Yield Bonds",
+      "asset_class": "Fixed Income",
+      "average_cost": 20.52061,
+      "current_price": 20.855,
+      "currency": "EUR"
+    },
+    {
+      "symbol": "AEEM.PA",
+      "name": "Amundi MSCI Emerging Markets Swap II UCITS ETF EUR Acc",
+      "shares": 270,
+      "sector": "Emerging Markets",
+      "asset_class": "Equity",
+      "average_cost": 13.13771,
+      "current_price": 14.756,
+      "currency": "EUR"
+    }
+  ],
+  "cash": 0,
+  "currency": "EUR",
+  "total_value": 14799.88,
+  "total_gain": 1317.21,
+  "total_gain_pct": 9.77
+}
