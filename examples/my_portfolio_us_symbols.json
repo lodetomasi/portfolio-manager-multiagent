@@ -1,0 +1,57 @@
+{
+  "name": "Portfolio Reale (Yahoo Finance Symbols)",
+  "description": "Portfolio con simboli corretti per Yahoo Finance - equivalenti USA dove necessario",
+  "holdings": [
+    {
+      "symbol": "DFEN",
+      "name": "Direxion Daily Aerospace & Defense Bull 3X (US equivalent of DEFX.MI)",
+      "shares": 14,
+      "sector": "Defense",
+      "asset_class": "Equity",
+      "average_cost": 47.9563,
+      "current_price": 69.17,
+      "currency": "USD",
+      "note": "Equivalente USA di VanEck Defense - aggiustato shares per valore simile"
+    },
+    {
+      "symbol": "VWCE.DE",
+      "name": "Vanguard FTSE All-World UCITS ETF (USD) Acc",
+      "shares": 46,
+      "sector": "Global Equity",
+      "asset_class": "Equity",
+      "average_cost": 131.16152,
+      "current_price": 141.66,
+      "currency": "EUR"
+    },
+    {
+      "symbol": "HYG",
+      "name": "iShares iBoxx $ High Yield Corporate Bond ETF (US equivalent of HYGG.PA)",
+      "shares": 23,
+      "sector": "High Yield Bonds",
+      "asset_class": "Fixed Income",
+      "average_cost": 20.52061,
+      "current_price": 80.84,
+      "currency": "USD",
+      "note": "Equivalente USA di Amundi HY - aggiustato shares per valore simile"
+    },
+    {
+      "symbol": "AEEM.PA",
+      "name": "Amundi MSCI Emerging Markets UCITS ETF EUR Acc",
+      "shares": 270,
+      "sector": "Emerging Markets",
+      "asset_class": "Equity",
+      "average_cost": 13.13771,
+      "current_price": 5.99,
+      "currency": "EUR"
+    }
+  ],
+  "cash": 0,
+  "currency": "USD",
+  "total_value": 14799.88,
+  "mapping": {
+    "DEFX.MI": "DFEN (US defense ETF)",
+    "VWCE.DE": "VWCE.DE (unchanged)",
+    "HYGG.PA": "HYG (US high yield ETF)",
+    "AEEM.PA": "AEEM.PA (unchanged)"
+  }
+}
