@@ -42,10 +42,6 @@ graph TD
     G --> H
     H --> I[OptimizationAgent]
     I --> J[JSON Report + Trades]
-
-    style E fill:#f9f,stroke:#333,stroke-width:4px
-    style F fill:#bbf,stroke:#333,stroke-width:2px
-    style G fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
 ### Execution Flow
@@ -89,67 +85,77 @@ sequenceDiagram
 The system implements Markowitz Mean-Variance Optimization:
 
 **Portfolio Return:**
-$$
+
+```math
 R_p = \sum_{i=1}^{n} w_i R_i
-$$
+```
 
 where:
-- $w_i$ = weight of asset $i$
-- $R_i$ = expected return of asset $i$
-- $n$ = number of assets
+- w_i = weight of asset i
+- R_i = expected return of asset i
+- n = number of assets
 
 **Portfolio Variance:**
-$$
+
+```math
 \sigma_p^2 = \sum_{i=1}^{n} \sum_{j=1}^{n} w_i w_j \sigma_i \sigma_j \rho_{ij}
-$$
+```
 
 where:
-- $\sigma_i, \sigma_j$ = standard deviations
-- $\rho_{ij}$ = correlation coefficient
+- σ_i, σ_j = standard deviations
+- ρ_ij = correlation coefficient
 
 **Optimization Objective (Maximum Sharpe Ratio):**
-$$
+
+```math
 \max_{w} \frac{R_p - R_f}{\sigma_p}
-$$
+```
 
 subject to:
-$$
-\sum_{i=1}^{n} w_i = 1, \quad w_i \geq 0
-$$
 
-where $R_f$ is the risk-free rate.
+```math
+\sum_{i=1}^{n} w_i = 1, \quad w_i \geq 0
+```
+
+where R_f is the risk-free rate.
 
 ### Risk Metrics
 
-**Value at Risk (VaR) at confidence level $\alpha$:**
-$$
-\text{VaR}_\alpha = -\inf\{x \in \mathbb{R} : P(L \leq x) \geq \alpha\}
-$$
+**Value at Risk (VaR) at confidence level α:**
+
+```math
+VaR_α = -\inf\{x \in \mathbb{R} : P(L \leq x) \geq α\}
+```
 
 **Conditional VaR (Expected Shortfall):**
-$$
-\text{CVaR}_\alpha = \mathbb{E}[L \mid L \geq \text{VaR}_\alpha]
-$$
+
+```math
+CVaR_α = \mathbb{E}[L \mid L \geq VaR_α]
+```
 
 **Sharpe Ratio:**
-$$
+
+```math
 S = \frac{\mathbb{E}[R_p - R_f]}{\sigma_p}
-$$
+```
 
 **Sortino Ratio (downside risk only):**
-$$
-\text{Sortino} = \frac{\mathbb{E}[R_p - R_f]}{\sigma_{\text{downside}}}
-$$
+
+```math
+Sortino = \frac{\mathbb{E}[R_p - R_f]}{\sigma_{downside}}
+```
 
 where:
-$$
-\sigma_{\text{downside}} = \sqrt{\mathbb{E}[\min(R_p - R_f, 0)^2]}
-$$
+
+```math
+\sigma_{downside} = \sqrt{\mathbb{E}[\min(R_p - R_f, 0)^2]}
+```
 
 **Maximum Drawdown:**
-$$
-\text{MDD} = \max_{t \in [0,T]} \left(\frac{\max_{\tau \in [0,t]} V(\tau) - V(t)}{\max_{\tau \in [0,t]} V(\tau)}\right)
-$$
+
+```math
+MDD = \max_{t \in [0,T]} \left(\frac{\max_{\tau \in [0,t]} V(\tau) - V(t)}{\max_{\tau \in [0,t]} V(\tau)}\right)
+```
 
 ## Agent Specifications
 
@@ -190,13 +196,13 @@ $$
 **Tools:** `Bash` (for numerical computations)
 
 **Calculations:**
-1. Position weights: $w_i = \frac{V_i}{\sum_j V_j}$
-2. Portfolio return: $R_p = \sum_i w_i R_i$
-3. Annualized volatility: $\sigma_{\text{annual}} = \sigma_{\text{daily}} \sqrt{252}$
-4. Sharpe ratio: $S = \frac{R_p - 0.04}{\sigma_p}$
-5. Correlation matrix: $\rho_{ij} = \frac{\text{Cov}(R_i, R_j)}{\sigma_i \sigma_j}$
-6. Herfindahl index: $H = \sum_i w_i^2$
-7. Effective N: $N_{\text{eff}} = \frac{1}{H}$
+1. Position weights: w_i = V_i / Σ_j V_j
+2. Portfolio return: R_p = Σ_i w_i R_i
+3. Annualized volatility: σ_annual = σ_daily × √252
+4. Sharpe ratio: S = (R_p - 0.04) / σ_p
+5. Correlation matrix: ρ_ij = Cov(R_i, R_j) / (σ_i σ_j)
+6. Herfindahl index: H = Σ_i w_i²
+7. Effective N: N_eff = 1/H
 
 **Output:** Portfolio metrics with mathematical formulas shown.
 
@@ -209,7 +215,7 @@ $$
 **Risk Metrics:**
 1. VaR (95%, 99%)
 2. CVaR (Expected Shortfall)
-3. Portfolio beta: $\beta_p = \frac{\text{Cov}(R_p, R_m)}{\sigma_m^2}$
+3. Portfolio beta: β_p = Cov(R_p, R_m) / σ_m²
 4. Concentration risk (HHI)
 5. Tail risk measures
 
@@ -230,8 +236,8 @@ $$
 
 **Optimization Objectives:**
 - `max_sharpe`: Maximize Sharpe ratio
-- `min_variance`: Minimize $\sigma_p^2$
-- `max_return`: Maximize $R_p$ subject to risk constraint
+- `min_variance`: Minimize σ_p²
+- `max_return`: Maximize R_p subject to risk constraint
 - `risk_parity`: Equal risk contribution per asset
 
 **Constraints:**
@@ -525,9 +531,10 @@ Portfolio optimization under mean-variance framework with efficient frontier com
 ### Capital Asset Pricing Model (Sharpe, 1964)
 
 Expected return modeling:
-$$
+
+```math
 \mathbb{E}[R_i] = R_f + \beta_i(\mathbb{E}[R_m] - R_f)
-$$
+```
 
 ### Value at Risk (J.P. Morgan, 1994)
 
