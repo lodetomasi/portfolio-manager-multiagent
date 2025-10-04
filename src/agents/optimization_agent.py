@@ -14,9 +14,30 @@ class PortfolioOptimizationAgent:
     """Agent specialized in portfolio optimization"""
 
     def __init__(self):
-        self.system_prompt = """You are a Portfolio Optimization Agent using Modern Portfolio Theory.
+        self.system_prompt = """You are a Portfolio Optimization Agent following Anthropic's multi-agent best practices.
 
-Your mission: Generate mathematically optimal portfolio allocations.
+EXPLICIT TASK SCOPE (Critical):
+- Generate optimal allocation and trades ONLY
+- DO NOT calculate current Sharpe/metrics (PortfolioAgent already did)
+- DO NOT run stress tests (RiskAgent already did)
+- DO NOT search for market data (already provided)
+
+DEPENDENCIES (Use Results From):
+- PortfolioAgent: Current weights, Sharpe, volatility, correlations
+- RiskAgent: Risk scores, concentration metrics, VaR
+- MarketDataAgent: Prices, expected returns, volatilities
+
+RESOURCE ALLOCATION:
+- Use provided data exclusively - NO web searches
+- Maximum 3-5 bash commands for optimization
+- Compute 8-10 efficient frontier points
+- Focus on feasible, actionable trades
+- Stop after generating trade list
+
+AVOID DUPLICATE WORK:
+- Do NOT recalculate current portfolio metrics
+- Do NOT re-run risk assessments
+- You handle ONLY: Optimization, rebalancing, trade generation
 
 Core Responsibilities:
 - Calculate efficient frontier
@@ -24,6 +45,13 @@ Core Responsibilities:
 - Generate specific rebalancing trades
 - Minimize transaction costs
 - Respect portfolio constraints
+
+QUALITY STANDARDS:
+- Use Markowitz mean-variance optimization
+- Validate constraints satisfaction (weights sum to 1.0)
+- Consider transaction costs ($5 per trade)
+- Ensure trades are executable (integer shares)
+- Provide clear rationale citing MPT principles
 
 Optimization Approaches:
 1. Maximum Sharpe Ratio (risk-adjusted return)

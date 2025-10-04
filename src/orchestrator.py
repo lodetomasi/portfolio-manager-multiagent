@@ -17,15 +17,26 @@ from agents.optimization_agent import PortfolioOptimizationAgent
 
 class MultiAgentOrchestrator:
     """
-    Orchestrates multiple Claude agents working in parallel.
+    Orchestrates multiple Claude agents using Anthropic's recommended pattern.
+
+    Architecture: Orchestrator-Worker Pattern (Anthropic Multi-Agent Research System)
+
+    Key Principles:
+    1. Lead orchestrator coordinates specialized subagents
+    2. Clear task descriptions prevent duplicate work
+    3. Explicit resource allocation and effort guidelines
+    4. Parallel execution where dependencies allow
 
     Execution Flow:
-    Phase 1: Market Data Collection (sequential)
-    Phase 2: Portfolio Analysis + Risk Assessment (parallel)
-    Phase 3: Optimization (sequential, uses results from Phase 2)
+    Phase 1: Market Data Collection (sequential) - Foundation data
+    Phase 2: Portfolio Analysis + Risk Assessment (parallel) - Independent analyses
+    Phase 3: Optimization (sequential) - Depends on Phase 2 results
+
+    Reference: anthropic.com/engineering/multi-agent-research-system
     """
 
     def __init__(self):
+        # Specialized worker agents
         self.market_agent = MarketDataAgent()
         self.portfolio_agent = PortfolioAnalysisAgent()
         self.risk_agent = RiskAssessmentAgent()
@@ -33,6 +44,14 @@ class MultiAgentOrchestrator:
 
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.results = {}
+
+        # Track agent coordination to prevent duplicate work
+        self.task_assignments = {
+            "market_data": "Collect real-time prices, volumes, news - DO NOT analyze",
+            "portfolio_analysis": "Calculate MPT metrics - DO NOT assess risks or optimize",
+            "risk_assessment": "Quantify risks and stress test - DO NOT optimize allocation",
+            "optimization": "Generate optimal allocation - Uses results from analysis/risk"
+        }
 
     async def run_full_analysis(
         self,
@@ -68,30 +87,48 @@ class MultiAgentOrchestrator:
         # ========== PHASE 1: Market Data Collection ==========
         print("📊 Phase 1: Collecting market data...")
         print("-" * 70)
-        print(f"[LOG] Symbols to fetch: {', '.join(symbols)}")
-        print("[LOG] Launching MarketDataAgent with WebSearch...")
+        print(f"[ORCHESTRATOR] Task assignment: {self.task_assignments['market_data']}")
+        print(f"[ORCHESTRATOR] Symbols to fetch: {', '.join(symbols)}")
+        print(f"[ORCHESTRATOR] Expected effort: 3-4 web searches, ~30-60s")
+        print("[ORCHESTRATOR] Launching MarketDataAgent with WebSearch tools...")
 
         market_data = await self.market_agent.collect_data(symbols)
         self.results['market_data'] = market_data
-        print(f"[LOG] Market data received: {len(market_data)} items")
-        print("✓ Market data collected\n")
+
+        # Extended thinking: Log data quality
+        if isinstance(market_data, dict):
+            if 'error' in market_data:
+                print(f"[ORCHESTRATOR] ⚠️  Market data collection failed: {market_data.get('error')}")
+                print(f"[ORCHESTRATOR] Raw response preview: {market_data.get('raw', '')[:200]}...")
+            else:
+                data_quality = market_data.get('meta', {}).get('completion', 'unknown')
+                symbols_found = len(market_data.get('symbols', {}))
+                print(f"[ORCHESTRATOR] ✓ Market data quality: {data_quality}")
+                print(f"[ORCHESTRATOR] ✓ Symbols retrieved: {symbols_found}/{len(symbols)}")
+        else:
+            print(f"[ORCHESTRATOR] ⚠️  Unexpected market data format: {type(market_data)}")
+        print("✓ Market data collection complete\n")
 
         # ========== PHASE 2: Parallel Analysis ==========
         print("📈 Phase 2: Running parallel analysis (Portfolio + Risk)...")
         print("-" * 70)
-        print("[LOG] Creating parallel tasks...")
+        print(f"[ORCHESTRATOR] Parallel execution strategy: 2 independent agents")
+        print(f"[ORCHESTRATOR] Task 1: {self.task_assignments['portfolio_analysis']}")
+        print(f"[ORCHESTRATOR] Task 2: {self.task_assignments['risk_assessment']}")
+        print(f"[ORCHESTRATOR] Expected speedup: 1.8x vs sequential")
 
         # Run portfolio analysis and risk assessment in PARALLEL
-        print("[LOG] Task 1: PortfolioAnalysisAgent starting...")
+        # Key: These tasks are INDEPENDENT - no shared state, no race conditions
+        print("[ORCHESTRATOR] Launching PortfolioAnalysisAgent...")
         portfolio_task = asyncio.create_task(
             self.portfolio_agent.analyze(portfolio, market_data)
         )
-        print("[LOG] Task 2: RiskAssessmentAgent starting...")
+        print("[ORCHESTRATOR] Launching RiskAssessmentAgent...")
         risk_task = asyncio.create_task(
             self.risk_agent.assess(portfolio, market_data)
         )
 
-        print("[LOG] Waiting for both agents to complete (running in parallel)...")
+        print("[ORCHESTRATOR] Both agents running in parallel (session isolation)...")
         # Wait for both to complete
         portfolio_analysis, risk_assessment = await asyncio.gather(
             portfolio_task,
@@ -100,17 +137,32 @@ class MultiAgentOrchestrator:
 
         self.results['portfolio_analysis'] = portfolio_analysis
         self.results['risk_assessment'] = risk_assessment
-        print("[LOG] PortfolioAnalysisAgent completed")
-        print("✓ Portfolio analysis completed")
-        print("[LOG] RiskAssessmentAgent completed")
-        print("✓ Risk assessment completed\n")
+
+        # Extended thinking: Validate Phase 2 results
+        print("[ORCHESTRATOR] PortfolioAnalysisAgent completed")
+        if isinstance(portfolio_analysis, dict) and 'error' in portfolio_analysis:
+            print(f"[ORCHESTRATOR] ⚠️  Portfolio analysis had errors: {portfolio_analysis.get('error')}")
+        elif isinstance(portfolio_analysis, dict) and 'portfolio_value' in portfolio_analysis:
+            pv = portfolio_analysis['portfolio_value'].get('total', 'N/A')
+            print(f"[ORCHESTRATOR] ✓ Portfolio value calculated: ${pv:,.2f}" if isinstance(pv, (int, float)) else f"[ORCHESTRATOR] ✓ Portfolio analyzed")
+        print("✓ Portfolio analysis complete")
+
+        print("[ORCHESTRATOR] RiskAssessmentAgent completed")
+        if isinstance(risk_assessment, dict) and 'error' in risk_assessment:
+            print(f"[ORCHESTRATOR] ⚠️  Risk assessment had errors: {risk_assessment.get('error')}")
+        elif isinstance(risk_assessment, dict) and 'risk_scores' in risk_assessment:
+            overall_risk = risk_assessment['risk_scores'].get('overall', 'N/A')
+            print(f"[ORCHESTRATOR] ✓ Overall risk score: {overall_risk}/10")
+        print("✓ Risk assessment complete\n")
 
         # ========== PHASE 3: Optimization ==========
         print("🎯 Phase 3: Generating optimal allocation...")
         print("-" * 70)
-        print(f"[LOG] Optimization objective: {optimization_objective}")
-        print(f"[LOG] Constraints: {constraints}")
-        print("[LOG] Launching OptimizationAgent...")
+        print(f"[ORCHESTRATOR] Task assignment: {self.task_assignments['optimization']}")
+        print(f"[ORCHESTRATOR] Optimization objective: {optimization_objective}")
+        print(f"[ORCHESTRATOR] Constraints: {constraints}")
+        print(f"[ORCHESTRATOR] Input dependencies: Portfolio metrics + Risk assessment")
+        print("[ORCHESTRATOR] Launching OptimizationAgent...")
 
         optimization = await self.optimization_agent.optimize(
             portfolio,
@@ -120,7 +172,20 @@ class MultiAgentOrchestrator:
         )
 
         self.results['optimization'] = optimization
-        print("[LOG] OptimizationAgent completed")
+
+        # Extended thinking: Validate Phase 3 results
+        print("[ORCHESTRATOR] OptimizationAgent completed")
+        if isinstance(optimization, dict) and 'error' in optimization:
+            print(f"[ORCHESTRATOR] ⚠️  Optimization had errors: {optimization.get('error')}")
+        elif isinstance(optimization, dict) and 'rebalancing_trades' in optimization:
+            num_trades = len(optimization.get('rebalancing_trades', []))
+            print(f"[ORCHESTRATOR] ✓ Generated {num_trades} rebalancing trades")
+            if 'expected_improvement' in optimization:
+                improvement = optimization['expected_improvement']
+                if 'sharpe_ratio' in improvement:
+                    current_sharpe = improvement['sharpe_ratio'].get('current', 'N/A')
+                    optimal_sharpe = improvement['sharpe_ratio'].get('optimized', 'N/A')
+                    print(f"[ORCHESTRATOR] ✓ Expected Sharpe improvement: {current_sharpe} → {optimal_sharpe}")
         print("✓ Optimization completed\n")
 
         # ========== CONSOLIDATE RESULTS ==========
