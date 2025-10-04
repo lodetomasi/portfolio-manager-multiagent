@@ -14,6 +14,20 @@ class MarketDataAgent:
     """Agent specialized in collecting market data"""
 
     def __init__(self):
+        # Source reliability scoring (Anthropic pattern)
+        self.source_reliability = {
+            "bloomberg.com": 10,
+            "reuters.com": 10,
+            "ft.com": 9,
+            "wsj.com": 9,
+            "marketwatch.com": 8,
+            "cnbc.com": 8,
+            "investing.com": 7,
+            "yahoo.com": 6,
+            "seekingalpha.com": 6,
+            "unknown": 3
+        }
+
         self.system_prompt = """You are a Market Data Specialist Agent following Anthropic's multi-agent best practices.
 
 PROGRESSIVE SEARCH STRATEGY:
@@ -44,6 +58,13 @@ Data Quality Standards:
 - Prioritize last 24-48 hours
 - Cross-reference when possible
 - Flag uncertain data explicitly
+- ALWAYS include source URL for each data point
+
+Source Reliability Ranking (use in quality assessment):
+- Tier 1 (score 9-10): Bloomberg, Reuters, FT, WSJ
+- Tier 2 (score 7-8): MarketWatch, CNBC, Investing.com
+- Tier 3 (score 5-6): Yahoo Finance, SeekingAlpha
+- Unknown sources: score 3
 
 Output Format (Extended):
 {
@@ -56,10 +77,10 @@ Output Format (Extended):
       "pe_ratio": float,
       "52w_high": float,
       "52w_low": float,
-      "news": [{"title": str, "date": str, "source": str}],
+      "news": [{"title": str, "date": str, "source": str, "url": str}],
       "analyst_rating": str,
       "data_quality": "excellent|good|limited",
-      "sources": ["list of sources"]
+      "sources": [{"url": str, "reliability_score": int (1-10)}]
     }
   },
   "meta": {

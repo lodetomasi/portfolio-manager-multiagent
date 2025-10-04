@@ -202,7 +202,7 @@ class MultiAgentOrchestrator:
                 "risk_assessment": risk_assessment,
                 "optimization": optimization
             },
-            "summary": self._generate_summary(
+            "summary": await self._generate_summary(
                 portfolio_analysis,
                 risk_assessment,
                 optimization
@@ -216,13 +216,123 @@ class MultiAgentOrchestrator:
 
         return final_report
 
-    def _generate_summary(
+    async def _generate_summary(
         self,
         portfolio_analysis: Dict,
         risk_assessment: Dict,
         optimization: Dict
     ) -> Dict:
-        """Generate executive summary from all agent results"""
+        """
+        Generate executive summary using Lead Agent synthesis.
+
+        Following Anthropic's pattern: Lead agent personally writes final report
+        with critical reasoning and synthesis of subagent results.
+        """
+        from claude_agent_sdk import query, ClaudeAgentOptions
+
+        print("[ORCHESTRATOR] Lead agent synthesizing final report...")
+
+        # Prepare context for lead agent
+        synthesis_prompt = f"""You are the Lead Portfolio Analyst synthesizing results from 4 specialist agents.
+
+AGENT RESULTS:
+
+1. PortfolioAgent Analysis:
+{json.dumps(portfolio_analysis, indent=2)}
+
+2. RiskAgent Assessment:
+{json.dumps(risk_assessment, indent=2)}
+
+3. OptimizationAgent Recommendations:
+{json.dumps(optimization, indent=2)}
+
+TASK:
+Write a concise executive summary with critical analysis. Include:
+
+1. KEY FINDINGS (3-5 bullet points)
+   - Current portfolio state with context (e.g., "Sharpe 0.39 is below market average of 0.8")
+   - Performance vs benchmarks
+   - Critical risks identified
+
+2. RECOMMENDATIONS (2-4 strategic recommendations)
+   - Why current allocation is suboptimal
+   - Specific improvement areas
+   - Risk mitigation priorities
+
+3. ACTION ITEMS (Top 3-5 concrete actions)
+   - Specific trades with rationale
+   - Prioritized by impact
+   - Include expected improvements
+
+STYLE:
+- Information-dense but concise
+- Professional quantitative language
+- Connect findings across agents (e.g., "High VWCE.DE concentration (PortfolioAgent) explains elevated risk score 7/10 (RiskAgent)")
+- Focus on actionable insights, not just metrics
+
+Return ONLY valid JSON:
+{{
+  "key_findings": [str],
+  "recommendations": [str],
+  "action_items": [str]
+}}
+"""
+
+        options = ClaudeAgentOptions(
+            system_prompt="You are a Lead Portfolio Analyst following Anthropic's multi-agent best practices. Your role is to synthesize subagent results into coherent, actionable insights with critical reasoning.",
+            allowed_tools=[]  # Lead only synthesizes, doesn't search
+        )
+
+        result_text = ""
+        try:
+            async with asyncio.timeout(60):  # 1-minute max for synthesis
+                async for message in query(prompt=synthesis_prompt, options=options):
+                    message_type = type(message).__name__
+                    if 'System' in message_type:
+                        continue
+
+                    raw_content = None
+                    if hasattr(message, 'result'):
+                        raw_content = message.result
+                    elif hasattr(message, 'content'):
+                        raw_content = message.content
+                    else:
+                        raw_content = message
+
+                    if isinstance(raw_content, list):
+                        for block in raw_content:
+                            if hasattr(block, 'text'):
+                                result_text += block.text + "\n"
+                    elif raw_content:
+                        result_text += str(raw_content) + "\n"
+        except asyncio.TimeoutError:
+            print("[ORCHESTRATOR] ⚠️  Synthesis timeout, using fallback summary")
+            return self._fallback_summary(portfolio_analysis, risk_assessment, optimization)
+
+        # Parse JSON
+        try:
+            if "```json" in result_text:
+                start = result_text.find("```json") + 7
+                end = result_text.find("```", start)
+                json_str = result_text[start:end].strip()
+                summary = json.loads(json_str)
+            else:
+                summary = json.loads(result_text)
+
+            print(f"[ORCHESTRATOR] ✓ Lead synthesis complete ({len(summary.get('key_findings', []))} findings)")
+            return summary
+
+        except json.JSONDecodeError as e:
+            print(f"[ORCHESTRATOR] ⚠️  Synthesis parse failed: {e}")
+            return self._fallback_summary(portfolio_analysis, risk_assessment, optimization)
+
+    def _fallback_summary(
+        self,
+        portfolio_analysis: Dict,
+        risk_assessment: Dict,
+        optimization: Dict
+    ) -> Dict:
+        """Fallback mechanical summary if lead synthesis fails"""
 
         summary = {
             "key_findings": [],
