@@ -1,0 +1,515 @@
+{
+  "generated_at": "2025-10-04T16:55:25.174783",
+  "walk_forward": [
+    {
+      "period": {
+        "start_date": "2020-01-02",
+        "end_date": "2021-04-01",
+        "description": "Walk-Forward Iteration 1"
+      },
+      "in_sample_sharpe": 0.6562787884045598,
+      "out_sample_sharpe": 1.0157477258161647,
+      "degradation": -54.77381621391244,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2020-02-03",
+        "end_date": "2021-05-03",
+        "description": "Walk-Forward Iteration 2"
+      },
+      "in_sample_sharpe": 0.6786715869704473,
+      "out_sample_sharpe": 1.597084787617461,
+      "degradation": -135.3251290136898,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2020-03-04",
+        "end_date": "2021-06-02",
+        "description": "Walk-Forward Iteration 3"
+      },
+      "in_sample_sharpe": 0.7378788181776902,
+      "out_sample_sharpe": 2.996039543734794,
+      "degradation": -306.034089870474,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2020-04-02",
+        "end_date": "2021-07-01",
+        "description": "Walk-Forward Iteration 4"
+      },
+      "in_sample_sharpe": 2.2527508134622116,
+      "out_sample_sharpe": 1.9108653438493501,
+      "degradation": 15.176355394914893,
+      "overfitting_score": 15.176355394914893
+    },
+    {
+      "period": {
+        "start_date": "2020-05-04",
+        "end_date": "2021-08-02",
+        "description": "Walk-Forward Iteration 5"
+      },
+      "in_sample_sharpe": 2.1035191669469895,
+      "out_sample_sharpe": 1.9920708020002413,
+      "degradation": 5.29818632974485,
+      "overfitting_score": 5.29818632974485
+    },
+    {
+      "period": {
+        "start_date": "2020-06-03",
+        "end_date": "2021-08-31",
+        "description": "Walk-Forward Iteration 6"
+      },
+      "in_sample_sharpe": 1.6380190095166125,
+      "out_sample_sharpe": 3.286568090933192,
+      "degradation": -100.64285407182633,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2020-07-02",
+        "end_date": "2021-09-30",
+        "description": "Walk-Forward Iteration 7"
+      },
+      "in_sample_sharpe": 1.81773995438222,
+      "out_sample_sharpe": -0.7327586150325374,
+      "degradation": 140.31152053768736,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2020-08-03",
+        "end_date": "2021-10-29",
+        "description": "Walk-Forward Iteration 8"
+      },
+      "in_sample_sharpe": 1.5908310131369057,
+      "out_sample_sharpe": 1.0448768916099296,
+      "degradation": 34.318800489715606,
+      "overfitting_score": 34.318800489715606
+    },
+    {
+      "period": {
+        "start_date": "2020-09-01",
+        "end_date": "2021-11-30",
+        "description": "Walk-Forward Iteration 9"
+      },
+      "in_sample_sharpe": 1.3590378794909497,
+      "out_sample_sharpe": -0.074835772755175,
+      "degradation": 105.50652589486364,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2020-10-01",
+        "end_date": "2021-12-30",
+        "description": "Walk-Forward Iteration 10"
+      },
+      "in_sample_sharpe": 1.4018525984874775,
+      "out_sample_sharpe": 2.3505923249929355,
+      "degradation": -67.677566637826,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2020-10-30",
+        "end_date": "2022-01-31",
+        "description": "Walk-Forward Iteration 11"
+      },
+      "in_sample_sharpe": 2.2644881150079814,
+      "out_sample_sharpe": -1.0874309327887748,
+      "degradation": 148.02104835886684,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2020-12-01",
+        "end_date": "2022-03-02",
+        "description": "Walk-Forward Iteration 12"
+      },
+      "in_sample_sharpe": 1.425443000926208,
+      "out_sample_sharpe": -1.0292128403614462,
+      "degradation": 172.20301616358537,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2020-12-31",
+        "end_date": "2022-03-31",
+        "description": "Walk-Forward Iteration 13"
+      },
+      "in_sample_sharpe": 1.4137639072590014,
+      "out_sample_sharpe": -1.2519486792035208,
+      "degradation": 188.5542962849287,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2021-02-02",
+        "end_date": "2022-05-02",
+        "description": "Walk-Forward Iteration 14"
+      },
+      "in_sample_sharpe": 0.6990452835898857,
+      "out_sample_sharpe": -1.7945585665438546,
+      "degradation": 356.71563898236417,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2021-03-04",
+        "end_date": "2022-06-01",
+        "description": "Walk-Forward Iteration 15"
+      },
+      "in_sample_sharpe": 0.7200143061479845,
+      "out_sample_sharpe": -1.2338596544057567,
+      "degradation": 271.3659914629754,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2021-04-05",
+        "end_date": "2022-07-01",
+        "description": "Walk-Forward Iteration 16"
+      },
+      "in_sample_sharpe": 0.406174812993886,
+      "out_sample_sharpe": -2.6695690460119836,
+      "degradation": 757.2463285782734,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2021-05-04",
+        "end_date": "2022-08-02",
+        "description": "Walk-Forward Iteration 17"
+      },
+      "in_sample_sharpe": -0.3140805014812385,
+      "out_sample_sharpe": -0.36208802032634135,
+      "degradation": 15.285100036039825,
+      "overfitting_score": 15.285100036039825
+    },
+    {
+      "period": {
+        "start_date": "2021-06-03",
+        "end_date": "2022-08-31",
+        "description": "Walk-Forward Iteration 18"
+      },
+      "in_sample_sharpe": -0.43301722225271877,
+      "out_sample_sharpe": -1.0771985260850945,
+      "degradation": 148.76574665578005,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2021-07-02",
+        "end_date": "2022-09-30",
+        "description": "Walk-Forward Iteration 19"
+      },
+      "in_sample_sharpe": -0.9289317623897925,
+      "out_sample_sharpe": -1.4847740026978715,
+      "degradation": 59.83671382686988,
+      "overfitting_score": 59.83671382686988
+    },
+    {
+      "period": {
+        "start_date": "2021-08-03",
+        "end_date": "2022-10-31",
+        "description": "Walk-Forward Iteration 20"
+      },
+      "in_sample_sharpe": -0.6490473311500206,
+      "out_sample_sharpe": -1.731829245010412,
+      "degradation": 166.8263409914735,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2021-09-01",
+        "end_date": "2022-11-30",
+        "description": "Walk-Forward Iteration 21"
+      },
+      "in_sample_sharpe": -0.9235420430038694,
+      "out_sample_sharpe": 0.22281156760516022,
+      "degradation": -124.12576333617189,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2021-10-01",
+        "end_date": "2022-12-30",
+        "description": "Walk-Forward Iteration 22"
+      },
+      "in_sample_sharpe": -1.1524296164071686,
+      "out_sample_sharpe": 0.498310918518072,
+      "degradation": -143.24003057745196,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2021-11-01",
+        "end_date": "2023-02-01",
+        "description": "Walk-Forward Iteration 23"
+      },
+      "in_sample_sharpe": -1.084125277583524,
+      "out_sample_sharpe": 1.6288325961200276,
+      "degradation": -250.2439459534268,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2021-12-01",
+        "end_date": "2023-03-03",
+        "description": "Walk-Forward Iteration 24"
+      },
+      "in_sample_sharpe": -0.6773906705712458,
+      "out_sample_sharpe": -0.027637214624577647,
+      "degradation": -95.92004793906135,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2021-12-31",
+        "end_date": "2023-04-03",
+        "description": "Walk-Forward Iteration 25"
+      },
+      "in_sample_sharpe": -1.1212923379049735,
+      "out_sample_sharpe": 2.311802442030413,
+      "degradation": -306.17303479927386,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2022-02-01",
+        "end_date": "2023-05-03",
+        "description": "Walk-Forward Iteration 26"
+      },
+      "in_sample_sharpe": -0.5118197571722242,
+      "out_sample_sharpe": -0.5751960545181306,
+      "degradation": 12.38254218556489,
+      "overfitting_score": 12.38254218556489
+    },
+    {
+      "period": {
+        "start_date": "2022-03-03",
+        "end_date": "2023-06-02",
+        "description": "Walk-Forward Iteration 27"
+      },
+      "in_sample_sharpe": -0.44671818038184224,
+      "out_sample_sharpe": 2.089066677505381,
+      "degradation": -567.6475615386204,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2022-04-01",
+        "end_date": "2023-07-05",
+        "description": "Walk-Forward Iteration 28"
+      },
+      "in_sample_sharpe": -0.49617034852120057,
+      "out_sample_sharpe": 2.6335640259728055,
+      "degradation": -630.7781962025643,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2022-05-03",
+        "end_date": "2023-08-03",
+        "description": "Walk-Forward Iteration 29"
+      },
+      "in_sample_sharpe": -0.12821249879815003,
+      "out_sample_sharpe": 3.2894493900568165,
+      "degradation": -2665.6230249716336,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2022-06-02",
+        "end_date": "2023-09-01",
+        "description": "Walk-Forward Iteration 30"
+      },
+      "in_sample_sharpe": 0.10538697264770694,
+      "out_sample_sharpe": 1.491418379269599,
+      "degradation": -1315.1828653956975,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2022-07-05",
+        "end_date": "2023-10-03",
+        "description": "Walk-Forward Iteration 31"
+      },
+      "in_sample_sharpe": 0.7168479639105036,
+      "out_sample_sharpe": -1.8348515405000831,
+      "degradation": 355.96104514138773,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2022-08-03",
+        "end_date": "2023-11-01",
+        "description": "Walk-Forward Iteration 32"
+      },
+      "in_sample_sharpe": 0.35249895679548054,
+      "out_sample_sharpe": -1.9357562579162109,
+      "degradation": 649.1523366519732,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2022-09-01",
+        "end_date": "2023-12-01",
+        "description": "Walk-Forward Iteration 33"
+      },
+      "in_sample_sharpe": 0.6841536110061474,
+      "out_sample_sharpe": 0.7007684788829279,
+      "degradation": -2.428528858065368,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2022-10-03",
+        "end_date": "2024-01-03",
+        "description": "Walk-Forward Iteration 34"
+      },
+      "in_sample_sharpe": 0.7630664733027439,
+      "out_sample_sharpe": 3.3734243534679864,
+      "degradation": -342.08787458148385,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2022-11-01",
+        "end_date": "2024-02-02",
+        "description": "Walk-Forward Iteration 35"
+      },
+      "in_sample_sharpe": 0.6788501089343624,
+      "out_sample_sharpe": 4.891679892670788,
+      "degradation": -620.5832080294712,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2022-12-01",
+        "end_date": "2024-03-05",
+        "description": "Walk-Forward Iteration 36"
+      },
+      "in_sample_sharpe": 0.9061509047167858,
+      "out_sample_sharpe": 3.358318957131322,
+      "degradation": -270.6136516169955,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2023-01-03",
+        "end_date": "2024-04-04",
+        "description": "Walk-Forward Iteration 37"
+      },
+      "in_sample_sharpe": 1.6207533328813115,
+      "out_sample_sharpe": 2.8566968400363635,
+      "degradation": -76.2573478690826,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2023-02-02",
+        "end_date": "2024-05-03",
+        "description": "Walk-Forward Iteration 38"
+      },
+      "in_sample_sharpe": 1.2273260912555897,
+      "out_sample_sharpe": 0.9686334739618011,
+      "degradation": 21.07774120805487,
+      "overfitting_score": 21.07774120805487
+    },
+    {
+      "period": {
+        "start_date": "2023-03-06",
+        "end_date": "2024-06-04",
+        "description": "Walk-Forward Iteration 39"
+      },
+      "in_sample_sharpe": 1.7607969066508102,
+      "out_sample_sharpe": 0.9636886715700321,
+      "degradation": 45.26974303907358,
+      "overfitting_score": 45.26974303907358
+    },
+    {
+      "period": {
+        "start_date": "2023-04-04",
+        "end_date": "2024-07-05",
+        "description": "Walk-Forward Iteration 40"
+      },
+      "in_sample_sharpe": 1.6918883439784063,
+      "out_sample_sharpe": 2.5162678977930453,
+      "degradation": -48.725411268934224,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2023-05-04",
+        "end_date": "2024-08-05",
+        "description": "Walk-Forward Iteration 41"
+      },
+      "in_sample_sharpe": 1.6851517655906734,
+      "out_sample_sharpe": -0.061736042148725495,
+      "degradation": 103.66353009914724,
+      "overfitting_score": 100
+    },
+    {
+      "period": {
+        "start_date": "2023-06-05",
+        "end_date": "2024-09-04",
+        "description": "Walk-Forward Iteration 42"
+      },
+      "in_sample_sharpe": 1.541790995834159,
+      "out_sample_sharpe": 0.6013612949068148,
+      "degradation": 60.99592639134212,
+      "overfitting_score": 60.99592639134212
+    },
+    {
+      "period": {
+        "start_date": "2023-07-06",
+        "end_date": "2024-10-03",
+        "description": "Walk-Forward Iteration 43"
+      },
+      "in_sample_sharpe": 1.8212938776838214,
+      "out_sample_sharpe": 0.42556012324679726,
+      "degradation": 76.63418691177993,
+      "overfitting_score": 76.63418691177993
+    },
+    {
+      "period": {
+        "start_date": "2023-08-04",
+        "end_date": "2024-11-01",
+        "description": "Walk-Forward Iteration 44"
+      },
+      "in_sample_sharpe": 0.9773872789785847,
+      "out_sample_sharpe": 2.612971811851184,
+      "degradation": -167.3425230766111,
+      "overfitting_score": 0
+    },
+    {
+      "period": {
+        "start_date": "2023-09-05",
+        "end_date": "2024-12-03",
+        "description": "Walk-Forward Iteration 45"
+      },
+      "in_sample_sharpe": 1.3947257038968544,
+      "out_sample_sharpe": 2.9511662148423174,
+      "degradation": -111.59473913736433,
+      "overfitting_score": 0
+    }
+  ],
+  "monte_carlo": [
+    {
+      "num_simulations": 10000,
+      "mean_return": 0.13859988828467884,
+      "median_return": 0.1233623524287436,
+      "std_return": 0.1976169264681511,
+      "percentile_5": -0.16177980451993823,
+      "percentile_95": 0.48539099403943187,
+      "var_95": 0.16177980451993823,
+      "expected_shortfall_95": 0.2206065130120416,
+      "probability_loss": 0.2472
+    }
+  ],
+  "agent_predictions": [],
+  "regime_analysis": []
+}

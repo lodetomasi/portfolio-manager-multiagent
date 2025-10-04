@@ -1,0 +1,53 @@
+{
+  "name": "100K Diversified Portfolio",
+  "description": "Sample $100,000 portfolio with diversified ETF allocation",
+  "holdings": [
+    {
+      "symbol": "SPY",
+      "shares": 120,
+      "sector": "US Equities (Large Cap)",
+      "description": "S&P 500 ETF - Core US market exposure"
+    },
+    {
+      "symbol": "QQQ",
+      "shares": 80,
+      "sector": "Technology",
+      "description": "Nasdaq 100 ETF - Tech-heavy growth"
+    },
+    {
+      "symbol": "VTI",
+      "shares": 100,
+      "sector": "US Total Market",
+      "description": "Total US Stock Market ETF"
+    },
+    {
+      "symbol": "VXUS",
+      "shares": 120,
+      "sector": "International Equities",
+      "description": "Total International Stock ETF"
+    },
+    {
+      "symbol": "BND",
+      "shares": 150,
+      "sector": "Bonds",
+      "description": "Total Bond Market ETF - Fixed income"
+    },
+    {
+      "symbol": "GLD",
+      "shares": 40,
+      "sector": "Precious Metals",
+      "description": "Gold ETF - Inflation hedge"
+    },
+    {
+      "symbol": "VNQ",
+      "shares": 60,
+      "sector": "Real Estate",
+      "description": "Real Estate ETF - REITs"
+    }
+  ],
+  "cash": 5000.00,
+  "total_value": 100000.00,
+  "allocation_strategy": "60/40 Stocks/Bonds with alternatives",
+  "risk_tolerance": "Moderate",
+  "investment_horizon": "10+ years"
+}
