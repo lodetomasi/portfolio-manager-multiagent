@@ -2,27 +2,27 @@
 
 ---
 
-**Building Production-Ready Multi-Agent Systems with Claude Agent SDK: A Case Study in Quantitative Finance**
+Building a Production-Ready Multi-Agent System with Claude Code SDK: A Case Study in Quantitative Finance
 
-I'm excited to share our latest research applying multi-agent architectures to portfolio optimization—demonstrating how specialized AI agents can outperform monolithic models in complex financial tasks.
+I'm excited to share my latest research applying multi-agent architecture to portfolio optimization—demonstrating how specialized AI agents can outperform monolithic models in complex financial tasks.
 
-**Key Innovation: Agent Specialization + Parallel Execution**
+Key Innovation: Agent Specialization + Parallel Execution
 
-We implemented a 4-agent system where each agent focuses on a narrow domain:
+I implemented a 4-agent system where each agent focuses on a narrow domain:
 • MarketDataAgent: Real-time data aggregation (WebSearch tools)
 • PortfolioAgent: Modern Portfolio Theory analytics (Sharpe ratio, correlations)
 • RiskAgent: Downside risk quantification (VaR, CVaR, stress tests)
 • OptimizationAgent: Efficient frontier computation (Markowitz optimization)
 
-**Technical Highlights:**
+Technical Highlight:
 
-1. **Parallel Agent Execution** (Phase 2)
+1. Parallel Agent Execution (Phase 2)
 Achieved 1.8x speedup by running PortfolioAgent and RiskAgent concurrently using asyncio.gather(). This reduces total analysis time from ~150s to ~90s while maintaining result quality.
 
-2. **Advanced Message Parsing**
-Implemented robust filtering to extract TextBlocks while skipping ToolUseBlocks and SystemMessages—critical for production reliability. Our parsing pipeline handles streaming responses with automatic timeout management (120s cap).
+2. Advanced Message Parsing
+Implemented robust filtering to extract TextBlocks while skipping ToolUseBlocks and SystemMessages—critical for production reliability. The parsing pipeline handles streaming responses with automatic timeout management (120s cap).
 
-3. **Tool Permission Architecture**
+3. Tool Permission Architecture
 Each agent operates with minimal privileges:
 - MarketDataAgent: [WebSearch, WebFetch]
 - PortfolioAgent: [Bash] only
@@ -31,7 +31,7 @@ Each agent operates with minimal privileges:
 
 This constraint-based design prevents scope creep and improves security.
 
-**Quantitative Results:**
+Quantitative Result:
 
 Backtested across 6 market regimes (2015-2024):
 • Average Sharpe ratio: 0.78
@@ -39,18 +39,18 @@ Backtested across 6 market regimes (2015-2024):
 • VaR 95% coverage: 94.2% (excellent calibration)
 • Positive alpha in 5/6 test periods
 
-**Why This Matters:**
+Why This Matter:
 
-Traditional approaches either use (1) single LLM calls with complex prompts, or (2) sequential agent chains. Our parallel multi-agent architecture demonstrates that:
+Traditional approaches either use (1) single LLM calls with complex prompts, or (2) sequential agent chains. My parallel multi-agent architecture demonstrates that:
 
 → Specialized agents with constrained tools outperform generalist agents
 → Parallel execution is feasible with proper session isolation
 → Production-ready systems require advanced message filtering
 → Financial domain benefits significantly from agent decomposition
 
-**Implementation Notes:**
+Implementation Note:
 
-Built on Claude Agent SDK (2025 release) leveraging:
+Built on Claude Code SDK (2025 release) leveraging:
 - Automatic context management (no manual compaction)
 - Streaming message protocol with structured types
 - Session isolation for parallel safety
@@ -62,15 +62,15 @@ Full mathematical framework implements:
 - Coherent risk measures (CVaR per Rockafellar & Uryasev)
 - Multi-period backtesting with validation metrics
 
-**Open Source:**
+Open Source:
 Code available at: github.com/lodetomasi/portfolio-manager-multiagent
 
-Special thanks to the Anthropic team for the Claude Agent SDK—enabling researchers to build sophisticated multi-agent systems without reinventing the orchestration layer.
+Special thanks to the Anthropic team for the Claude Code SDK—enabling researchers to build sophisticated multi-agent systems without reinventing the orchestration layer.
 
-Curious to hear from others working on multi-agent financial systems: What decomposition strategies have you found most effective?
+Curious to hear from others working on multi-agent financial systems: What decomposition strategy have you found most effective?
 
-#MachineLearning #AI #QuantitativeFinance #MultiAgentSystems #PortfolioOptimization #ModernPortfolioTheory #AIResearch #FinTech #ClaudeAI #LLM #ReinforcementLearning #AlgorithmicTrading #ComputationalFinance #FAIR #MetaAI #AnthropicAI #ProductionML
+#MachineLearning #AI #QuantitativeFinance #MultiAgentSystem #PortfolioOptimization #ModernPortfolioTheory #AIResearch #FinTech #ClaudeCode #LLM #ReinforcementLearning #AlgorithmicTrading #ComputationalFinance #FAIR #MetaAI #AnthropicAI #ProductionML
 
 ---
 
-**Character count: 2,996 / 3,000**
+Character count: 2,912 / 3,000
