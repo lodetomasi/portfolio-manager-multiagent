@@ -53,7 +53,7 @@ sequenceDiagram
     participant M as MarketAgent
     participant P as PortfolioAgent
     participant R as RiskAgent
-    participant Opt as OptimizationAgent
+    participant Op as OptimizationAgent
 
     U->>O: Portfolio + Objective
     O->>M: Fetch Market Data
@@ -71,9 +71,9 @@ sequenceDiagram
     P-->>O: Portfolio Metrics
     R-->>O: Risk Assessment
 
-    O->>Opt: Optimize Allocation
-    Opt->>Opt: Efficient frontier, trade generation
-    Opt-->>O: Optimal Allocation + Trades
+    O->>Op: Optimize Allocation
+    Op->>Op: Efficient frontier, trade generation
+    Op-->>O: Optimal Allocation + Trades
 
     O-->>U: Complete Report
 ```
