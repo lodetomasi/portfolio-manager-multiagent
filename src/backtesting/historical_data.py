@@ -2,12 +2,14 @@
 Historical Data Retrieval for Backtesting
 
 Fetches real historical price data for accurate backtesting.
-Uses web search to gather historical ETF prices since we don't have API access.
+Uses yfinance for reliable historical data from Yahoo Finance.
 """
 
 from typing import Dict, List, Tuple
 from datetime import datetime, timedelta
 import asyncio
+import yfinance as yf
+import pandas as pd
 
 
 class HistoricalDataFetcher:
@@ -35,13 +37,13 @@ class HistoricalDataFetcher:
         frequency: str = "daily"
     ) -> Dict:
         """
-        Fetch historical prices for a symbol.
+        Fetch historical prices for a symbol using yfinance.
 
         Args:
             symbol: Stock/ETF ticker
             start_date: Start date (YYYY-MM-DD)
             end_date: End date (YYYY-MM-DD)
-            frequency: 'daily', 'weekly', 'monthly'
+            frequency: 'daily', 'weekly', 'monthly' (yfinance: '1d', '1wk', '1mo')
 
         Returns:
             Dictionary with dates and prices
@@ -51,29 +53,80 @@ class HistoricalDataFetcher:
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        print(f"[HistoricalData] Fetching {symbol} from {start_date} to {end_date}...")
+        print(f"[HistoricalData] Fetching {symbol} from {start_date} to {end_date} via yfinance...")
 
-        # In real implementation, would query via Claude's WebSearch
-        # For now, structure what we need:
-        data = {
-            "symbol": symbol,
-            "start_date": start_date,
-            "end_date": end_date,
-            "frequency": frequency,
-            "prices": [],  # List of {date, open, high, low, close, volume}
-            "metadata": {
-                "source": "Historical Database",
-                "fetched_at": datetime.now().isoformat()
+        try:
+            # Map frequency to yfinance intervals
+            interval_map = {
+                "daily": "1d",
+                "weekly": "1wk",
+                "monthly": "1mo"
             }
-        }
+            interval = interval_map.get(frequency, "1d")
 
-        # TODO: Implement actual web search query like:
-        # query = f"{symbol} historical stock prices {start_date} to {end_date} daily data"
-        # Use WebSearch tool to find data from Yahoo Finance, etc.
-        # Parse the results into structured format
+            # Download data from Yahoo Finance
+            ticker = yf.Ticker(symbol)
+            hist = ticker.history(start=start_date, end=end_date, interval=interval)
 
-        self.cache[cache_key] = data
-        return data
+            if hist.empty:
+                print(f"[HistoricalData] ⚠️  No data found for {symbol}")
+                return {
+                    "symbol": symbol,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "frequency": frequency,
+                    "prices": [],
+                    "metadata": {
+                        "source": "Yahoo Finance (yfinance)",
+                        "fetched_at": datetime.now().isoformat(),
+                        "error": "No data available"
+                    }
+                }
+
+            # Convert DataFrame to structured format
+            prices = []
+            for date_idx, row in hist.iterrows():
+                prices.append({
+                    "date": date_idx.strftime("%Y-%m-%d"),
+                    "open": float(row['Open']),
+                    "high": float(row['High']),
+                    "low": float(row['Low']),
+                    "close": float(row['Close']),
+                    "volume": int(row['Volume'])
+                })
+
+            data = {
+                "symbol": symbol,
+                "start_date": start_date,
+                "end_date": end_date,
+                "frequency": frequency,
+                "prices": prices,
+                "metadata": {
+                    "source": "Yahoo Finance (yfinance)",
+                    "fetched_at": datetime.now().isoformat(),
+                    "num_days": len(prices)
+                }
+            }
+
+            print(f"[HistoricalData] ✓ Fetched {len(prices)} data points for {symbol}")
+
+            self.cache[cache_key] = data
+            return data
+
+        except Exception as e:
+            print(f"[HistoricalData] ❌ Error fetching {symbol}: {e}")
+            return {
+                "symbol": symbol,
+                "start_date": start_date,
+                "end_date": end_date,
+                "frequency": frequency,
+                "prices": [],
+                "metadata": {
+                    "source": "Yahoo Finance (yfinance)",
+                    "fetched_at": datetime.now().isoformat(),
+                    "error": str(e)
+                }
+            }
 
     async def fetch_multiple_symbols(
         self,

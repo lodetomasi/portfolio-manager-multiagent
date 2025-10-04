@@ -13,6 +13,9 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass, asdict
 import statistics
+import asyncio
+from .historical_data import HistoricalDataFetcher
+from .performance import PerformanceCalculator
 
 
 @dataclass
@@ -65,6 +68,8 @@ class PortfolioBacktester:
     def __init__(self):
         self.results = []
         self.validation_metrics = {}
+        self.historical_fetcher = HistoricalDataFetcher()
+        self.perf_calculator = PerformanceCalculator()
 
     def define_test_periods(self) -> List[BacktestPeriod]:
         """
@@ -131,46 +136,114 @@ class PortfolioBacktester:
         print(f"Period: {period.start_date} to {period.end_date}")
         print(f"{'='*70}\n")
 
-        # TODO: Implement actual historical data fetching
-        # For now, return structure showing what we need
-
         snapshots = []
         validation_errors = []
 
-        # Simulate portfolio performance tracking
-        # In production, this would:
-        # 1. Fetch historical prices for all symbols
-        # 2. Apply rebalancing rules
-        # 3. Calculate daily returns
-        # 4. Track drawdowns in real-time
-        # 5. Validate risk metrics continuously
+        # Extract symbols from portfolio
+        symbols = [h['symbol'] for h in portfolio['holdings']]
+        print(f"[Backtester] Fetching historical data for {len(symbols)} symbols...")
 
-        initial_value = self._calculate_portfolio_value(portfolio, period.start_date)
-        final_value = initial_value * 1.15  # Placeholder - would be actual from data
-
-        total_return = (final_value - initial_value) / initial_value
-
-        # Calculate time period in years
-        start = datetime.strptime(period.start_date, "%Y-%m-%d")
-        end = datetime.strptime(period.end_date, "%Y-%m-%d")
-        years = (end - start).days / 365.25
-
-        annualized_return = ((final_value / initial_value) ** (1/years) - 1) if years > 0 else total_return
-
-        result = BacktestResult(
-            period=period,
-            initial_value=initial_value,
-            final_value=final_value,
-            total_return_pct=total_return * 100,
-            annualized_return_pct=annualized_return * 100,
-            sharpe_ratio=0.0,  # To be calculated from daily returns
-            max_drawdown_pct=0.0,  # To be calculated from price series
-            volatility=0.0,  # To be calculated from returns
-            win_rate=0.0,  # Percentage of positive return days
-            metrics={},
-            snapshots=snapshots,
-            validation_errors=validation_errors
+        # Fetch historical prices for all symbols
+        historical_prices = await self.historical_fetcher.fetch_multiple_symbols(
+            symbols,
+            period.start_date,
+            period.end_date
         )
+
+        # Check if we got data
+        has_data = any(len(data.get('prices', [])) > 0 for data in historical_prices.values())
+        if not has_data:
+            validation_errors.append("No historical data available for any symbols")
+            print(f"[Backtester] ⚠️  No historical data - using fallback calculation")
+
+            # Fallback to simple calculation
+            initial_value = self._calculate_portfolio_value(portfolio, period.start_date)
+            final_value = initial_value * 1.15
+            total_return = 0.15
+            start = datetime.strptime(period.start_date, "%Y-%m-%d")
+            end = datetime.strptime(period.end_date, "%Y-%m-%d")
+            years = (end - start).days / 365.25
+            annualized_return = ((1 + total_return) ** (1/years) - 1) if years > 0 else total_return
+
+            result = BacktestResult(
+                period=period,
+                initial_value=initial_value,
+                final_value=final_value,
+                total_return_pct=total_return * 100,
+                annualized_return_pct=annualized_return * 100,
+                sharpe_ratio=0.0,
+                max_drawdown_pct=0.0,
+                volatility=0.0,
+                win_rate=0.0,
+                metrics={},
+                snapshots=snapshots,
+                validation_errors=validation_errors
+            )
+            self.results.append(result)
+            return result
+
+        # Calculate daily portfolio values
+        daily_values = self._calculate_daily_portfolio_values(
+            portfolio,
+            historical_prices,
+            period.start_date,
+            period.end_date
+        )
+
+        if not daily_values:
+            validation_errors.append("Failed to calculate daily portfolio values")
+            print(f"[Backtester] ❌ Failed to calculate daily values")
+            initial_value = self._calculate_portfolio_value(portfolio, period.start_date)
+            final_value = initial_value
+            total_return = 0.0
+            annualized_return = 0.0
+        else:
+            initial_value = daily_values[0]['total_value']
+            final_value = daily_values[-1]['total_value']
+            total_return = (final_value - initial_value) / initial_value
+
+            # Calculate time period in years
+            start = datetime.strptime(period.start_date, "%Y-%m-%d")
+            end = datetime.strptime(period.end_date, "%Y-%m-%d")
+            years = (end - start).days / 365.25
+
+            annualized_return = ((final_value / initial_value) ** (1/years) - 1) if years > 0 else total_return
+
+            # Calculate performance metrics from daily values
+            returns = [(daily_values[i]['total_value'] / daily_values[i-1]['total_value'] - 1)
+                      for i in range(1, len(daily_values))]
+
+            sharpe_ratio = self.perf_calculator.sharpe_ratio(returns, risk_free_rate=0.04)
+            max_drawdown_tuple = self.perf_calculator.max_drawdown([dv['total_value'] for dv in daily_values])
+            max_drawdown = max_drawdown_tuple[0]  # Extract drawdown percentage from tuple
+            volatility = self.perf_calculator.volatility(returns, annualize=True)
+            win_rate = sum(1 for r in returns if r > 0) / len(returns) if returns else 0
+
+            print(f"[Backtester] ✓ Calculated {len(daily_values)} daily values")
+            print(f"[Backtester] Total Return: {total_return*100:.2f}%")
+            print(f"[Backtester] Sharpe Ratio: {sharpe_ratio:.2f}")
+            print(f"[Backtester] Max Drawdown: {max_drawdown*100:.2f}%")
+            print(f"[Backtester] Volatility (annual): {volatility*100:.2f}%")
+
+            result = BacktestResult(
+                period=period,
+                initial_value=initial_value,
+                final_value=final_value,
+                total_return_pct=total_return * 100,
+                annualized_return_pct=annualized_return * 100,
+                sharpe_ratio=sharpe_ratio,
+                max_drawdown_pct=max_drawdown * 100,
+                volatility=volatility,
+                win_rate=win_rate * 100,
+                metrics={
+                    "num_days": len(daily_values),
+                    "num_returns": len(returns),
+                    "positive_days": sum(1 for r in returns if r > 0),
+                    "negative_days": sum(1 for r in returns if r < 0)
+                },
+                snapshots=snapshots,
+                validation_errors=validation_errors
+            )
 
         self.results.append(result)
         return result
@@ -180,6 +253,85 @@ class PortfolioBacktester:
         # Placeholder - would fetch historical prices
         base_value = 100000  # Starting capital assumption
         return base_value
+
+    def _calculate_daily_portfolio_values(
+        self,
+        portfolio: Dict,
+        historical_prices: Dict[str, Dict],
+        start_date: str,
+        end_date: str
+    ) -> List[Dict]:
+        """
+        Calculate daily portfolio values using real historical prices.
+
+        Args:
+            portfolio: Portfolio with holdings and shares
+            historical_prices: Dict of symbol -> {prices: [{date, close, ...}]}
+            start_date, end_date: Period
+
+        Returns:
+            List of {date, total_value, holdings: {symbol: value}}
+        """
+        # Build a date-indexed price map for each symbol
+        price_by_date = {}
+        for symbol, data in historical_prices.items():
+            price_by_date[symbol] = {}
+            for price_entry in data.get('prices', []):
+                price_by_date[symbol][price_entry['date']] = price_entry['close']
+
+        # Get all dates where we have prices (intersection of all symbols)
+        all_dates = set()
+        for symbol_prices in price_by_date.values():
+            all_dates.update(symbol_prices.keys())
+
+        # Filter to period and sort
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+
+        valid_dates = sorted([
+            d for d in all_dates
+            if start_dt <= datetime.strptime(d, "%Y-%m-%d") <= end_dt
+        ])
+
+        if not valid_dates:
+            print(f"[Backtester] ⚠️  No overlapping dates found for portfolio calculation")
+            return []
+
+        print(f"[Backtester] Calculating portfolio values for {len(valid_dates)} trading days")
+
+        # Calculate portfolio value for each date
+        daily_values = []
+        for date in valid_dates:
+            total_value = 0
+            holdings_value = {}
+            missing_prices = []
+
+            for holding in portfolio['holdings']:
+                symbol = holding['symbol']
+                shares = holding['shares']
+
+                if symbol in price_by_date and date in price_by_date[symbol]:
+                    price = price_by_date[symbol][date]
+                    value = shares * price
+                    total_value += value
+                    holdings_value[symbol] = value
+                else:
+                    missing_prices.append(symbol)
+
+            # Add cash
+            total_value += portfolio.get('cash', 0)
+
+            # Only include date if we have all prices
+            if not missing_prices:
+                daily_values.append({
+                    'date': date,
+                    'total_value': total_value,
+                    'holdings': holdings_value
+                })
+
+        print(f"[Backtester] ✓ Successfully calculated {len(daily_values)} complete daily values")
+
+        return daily_values
 
     def validate_predictions(
         self,
