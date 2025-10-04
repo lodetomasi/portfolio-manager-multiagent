@@ -57,10 +57,10 @@ class RealDataFetcher:
 
                     print(f"[RealData] ✓ {symbol}: ${current_price:.2f} ({change_pct:+.2f}%)")
                 else:
-                    print(f"[RealData] ⚠️  No data for {symbol}")
+                    print(f"[RealData] ⚠️  No data for {symbol} - will use WebSearch fallback")
 
             except Exception as e:
-                print(f"[RealData] ❌ Error fetching {symbol}: {e}")
+                print(f"[RealData] ⚠️  {symbol} not available on Yahoo Finance - will use WebSearch fallback")
 
         return result
 

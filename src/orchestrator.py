@@ -104,17 +104,22 @@ class MultiAgentOrchestrator:
             period="1y"
         )
 
-        # Calculate real metrics from historical data
-        real_metrics = self.real_data.calculate_real_metrics(
-            real_historical['returns'],
-            real_historical['values']
-        )
+        # Calculate real metrics from historical data (if we have data)
+        if real_historical['returns'] and real_historical['values']:
+            real_metrics = self.real_data.calculate_real_metrics(
+                real_historical['returns'],
+                real_historical['values']
+            )
 
-        print(f"[ORCHESTRATOR] ✓ Real data quality: {real_metrics['data_quality']}")
-        print(f"[ORCHESTRATOR] ✓ Historical data points: {real_metrics['num_data_points']}")
-        print(f"[ORCHESTRATOR] ✓ Real Sharpe Ratio: {real_metrics['sharpe_ratio']:.3f}")
-        print(f"[ORCHESTRATOR] ✓ Real Volatility: {real_metrics['volatility']*100:.2f}%")
-        print(f"[ORCHESTRATOR] ✓ Real Max Drawdown: {real_metrics['max_drawdown']*100:.2f}%")
+            print(f"[ORCHESTRATOR] ✓ Real data quality: {real_metrics['data_quality']}")
+            print(f"[ORCHESTRATOR] ✓ Historical data points: {real_metrics['num_data_points']}")
+            print(f"[ORCHESTRATOR] ✓ Real Sharpe Ratio: {real_metrics['sharpe_ratio']:.3f}")
+            print(f"[ORCHESTRATOR] ✓ Real Volatility: {real_metrics['volatility']*100:.2f}%")
+            print(f"[ORCHESTRATOR] ✓ Real Max Drawdown: {real_metrics['max_drawdown']*100:.2f}%")
+        else:
+            print(f"[ORCHESTRATOR] ⚠️  Insufficient real data - some symbols not available on Yahoo Finance")
+            print(f"[ORCHESTRATOR] ℹ️  Will use WebSearch data with quality scoring")
+            real_metrics = {}
 
         self.results['real_data'] = {
             'prices': real_prices,
