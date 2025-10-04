@@ -255,6 +255,110 @@ MDD = \max_{t \in [0,T]} \left(\frac{\max_{\tau \in [0,t]} V(\tau) - V(t)}{\max_
 - Specific BUY/SELL orders (shares to trade)
 - Expected improvement metrics
 
+## Claude Agent SDK Features (2025)
+
+This project leverages cutting-edge features from the **Claude Agent SDK** (released 2025):
+
+### Core SDK Capabilities Used
+
+**1. Programmatic Agent Creation**
+```python
+from claude_agent_sdk import query, ClaudeAgentOptions
+
+options = ClaudeAgentOptions(
+    system_prompt="You are a specialized financial analyst...",
+    allowed_tools=["WebSearch", "Bash"]
+)
+
+async for message in query(prompt=user_prompt, options=options):
+    # Process streaming responses
+```
+
+**2. Tool Permission System**
+Fine-grained control over agent capabilities:
+- `allowed_tools`: Whitelist specific tools (WebSearch, WebFetch, Bash)
+- Agents cannot access tools outside their permission scope
+- Security: prevents unintended data access
+
+**3. Streaming Message Processing**
+Real-time response handling with structured message types:
+- `SystemMessage`: Metadata and initialization
+- `AssistantMessage`: Agent reasoning and responses
+- `UserMessage`: Tool results and feedback
+- `ResultMessage`: Final structured output
+- `TextBlock`: Actual text content
+- `ToolUseBlock`: Function calls (filtered out in parsing)
+
+**4. Automatic Context Management**
+SDK handles context window automatically:
+- Compaction when approaching limit
+- Message summarization
+- No manual token counting needed
+
+**5. Session Isolation**
+Each agent runs in isolated session:
+- Independent context windows
+- No cross-contamination
+- Parallel execution safe
+
+### Advanced Features Implemented
+
+**Multi-Agent Orchestration**
+```python
+# Parallel execution of specialized agents
+portfolio_task = asyncio.create_task(portfolio_agent.analyze(...))
+risk_task = asyncio.create_task(risk_agent.assess(...))
+
+results = await asyncio.gather(portfolio_task, risk_task)
+```
+
+**Custom System Prompts**
+Each agent has specialized persona:
+- MarketDataAgent: "Financial data specialist focusing on accuracy..."
+- PortfolioAgent: "Quantitative analyst expert in Modern Portfolio Theory..."
+- RiskAgent: "Risk management specialist using VaR, CVaR..."
+- OptimizationAgent: "Portfolio optimizer implementing efficient frontier..."
+
+**Timeout Management**
+```python
+async with asyncio.timeout(120):  # 2-minute max per agent
+    async for message in query(...):
+        # Process with automatic timeout
+```
+
+**Message Filtering Strategy**
+Advanced parsing to extract only relevant content:
+```python
+if 'System' in message_type:
+    continue  # Skip metadata
+
+if isinstance(raw_content, list):
+    for block in raw_content:
+        if hasattr(block, 'text'):  # TextBlock only
+            result_text += block.text
+```
+
+### Why Claude Agent SDK?
+
+**vs Direct API Calls:**
+- ✅ Built-in tool execution (no manual function calling)
+- ✅ Automatic context management
+- ✅ Session handling and error recovery
+- ✅ Streaming support out-of-box
+
+**vs Other Frameworks:**
+- ✅ Native Anthropic integration (no adapters)
+- ✅ Production-ready (powers Claude Code)
+- ✅ Rich tool ecosystem (WebSearch, Bash, MCP)
+- ✅ Fine-grained permissions
+
+### 2025 New Features Used
+
+1. **Enhanced Tool Ecosystem**: WebSearch with real-time market data
+2. **Improved Streaming**: Structured message types for better parsing
+3. **Production Stability**: Battle-tested in Claude Code
+4. **MCP Extensibility**: Future integration with custom tools
+
 ## Implementation Details
 
 ### Parallel Execution with asyncio
