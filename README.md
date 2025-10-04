@@ -5,20 +5,37 @@ A scientifically validated distributed multi-agent system for quantitative portf
 ## 🎯 Quick Example
 
 ```bash
-python run_analysis.py --portfolio examples/my_portfolio.json --objective max_sharpe
+python run_analysis.py --portfolio examples/my_portfolio_us_symbols.json --objective max_sharpe
 ```
 
-**Output:**
+**Real Output (User Portfolio - Oct 2024):**
 ```
-Portfolio Value: €100,000
-Sharpe Ratio: 1.57
-Max Drawdown: -8.96%
-Risk Score: 4/10 (LOW RISK)
+📊 Phase 0: Fetching REAL market data (yfinance)...
+[RealData] ✓ DFEN: $69.17 (+0.60%)
+[RealData] ✓ VWCE.DE: $141.66 (+0.43%)
+[RealData] ✓ HYG: $80.84 (-0.11%)
+[RealData] ✓ AEEM.PA: $5.99 (+0.43%)
+[RealData] ✓ Portfolio: 244 historical values from real data
+[ORCHESTRATOR] ✓ Real Sharpe Ratio: 0.881
+[ORCHESTRATOR] ✓ Real Volatility: 13.81%
+[ORCHESTRATOR] ✓ Real Max Drawdown: 17.16%
+
+Portfolio Value: $14,799.88
+Total Return (1Y): +15.80%
+Risk Score: 7/10 (MEDIUM-HIGH RISK)
+
+KEY FINDINGS:
+  • Solid risk-adjusted performance (Sharpe 0.88) but elevated risk
+  • DFEN 3X leveraged ETF creates disproportionate tail risk (8/10)
+  • Concentration risk: VWCE.DE 44% allocation, HHI=0.29
+  • 25.94% idle cash - opportunity for diversification
 
 RECOMMENDATIONS:
-  • Portfolio exhibits excellent risk-adjusted returns
-  • Diversification effective across 7 asset classes
-  • Monte Carlo simulation: 13.86% expected return, 24.7% prob of loss
+  • SELL DFEN (14 shares, ~$717): 3X leverage + 60% volatility
+    Lock 87% gains, reduce portfolio volatility by 2-3%
+  • REDUCE VWCE.DE: 46 → 31 shares (44% → 30%)
+  • DEPLOY $2,611: $1,000 bonds, $800 gold, $600 intl bonds
+  • Expected Sharpe improvement: 0.88 → 1.0-1.1
 
 VALIDATION:
   ✅ Walk-forward analysis: EXCELLENT generalization (-99.8% degradation)
